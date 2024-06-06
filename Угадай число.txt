@@ -1,0 +1,42 @@
+using System;
+using System.IO;
+
+public class Program
+{
+    public static int Fokus(int num, string strk, int x)
+    {
+        string[] parts = strk.Split();
+        string v = parts[0];
+        string n = parts[1];
+        if (n == "x")
+            n = x.ToString();
+        if (v == "+")
+            return num + int(n);
+        if (v == "-")
+            return num - int(n);
+        if (v == "*")
+            return num * int(n);
+        if (v == "/")
+            return num / int(n);
+        return num;
+    }
+
+    public static void Main()
+    {
+        string[] lines = File.ReadAllLines("
+input_s1_01.txt");
+        for (int x = -100; x <= 100; x++)
+        {
+            int t = x;
+            for (int i = 1; i < lines.Length - 1; i++)
+            {
+                t = Fokus(t, lines[i], x);
+            }
+            if (t == int.Parse(lines[lines.Length - 1]))
+            {
+                Console.WriteLine(x);
+                break;
+            }
+        }
+    }
+}

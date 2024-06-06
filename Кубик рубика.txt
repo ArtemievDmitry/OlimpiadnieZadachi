@@ -1,0 +1,93 @@
+using System;
+using System.IO;
+
+for (int i = 1; i <= 20; i++)
+{
+    string u = i.ToString("D2");
+    string inputFile = $"input_s1_{u}.txt";
+    string outputFile = $"output_s1_{u}.txt";
+
+    using (StreamReader file = new StreamReader(inputFile))
+    {
+        string line = file.ReadLine().Trim();
+        string[] parts = line.Split();
+        int n = int.Parse(parts[0]);
+        int m = int.Parse(parts[1]);
+
+        line = file.ReadLine().Trim();
+        parts = line.Split();
+        int xPos = int.Parse(parts[0]);
+        int yPos = int.Parse(parts[1]);
+        int zPos = int.Parse(parts[2]);
+
+        for (int j = 0; j < m; j++)
+        {
+            line = file.ReadLine().Trim();
+            parts = line.Split();
+            string axis = parts[0];
+            int cord = int.Parse(parts[1]);
+            int dir = int.Parse(parts[2]);
+
+            if (axis == "X")
+            {
+                if (xPos == cord)
+                {
+                    if (dir > 0)
+                    {
+                        int tmp = zPos;
+                        zPos = n + 1 - yPos;
+                        yPos = tmp;
+                    }
+                    else
+                    {
+                        int tmp = yPos;
+                        yPos = n + 1 - zPos;
+                        zPos = tmp;
+                    }
+                }
+            }
+            else if (axis == "Y")
+            {
+                if (yPos == cord)
+                {
+                    if (dir > 0)
+                    {
+                        int tmp = zPos;
+                        zPos = n + 1 - xPos;
+                        xPos = tmp;
+                    }
+                    else
+                    {
+                        int tmp = xPos;
+                        xPos = n + 1 - zPos;
+                        zPos = tmp;
+                    }
+                }
+            }
+            else if (axis == "Z")
+            {
+                if (zPos == cord)
+                {
+                    if (dir > 0)
+                    {
+                        int tmp = yPos;
+                        yPos = n + 1 - xPos;
+                        xPos = tmp;
+                    }
+                    else
+                    {
+                        int tmp = xPos;
+                        xPos = n + 1 - yPos;
+                        yPos = tmp;
+                    }
+                }
+            }
+        }
+
+        Console.WriteLine($"{xPos} {yPos} {zPos}");
+
+        string expectedOutput = File.ReadAllText(outputFile).Trim();
+        string actualOutput = $"{xPos} {yPos} {zPos}";
+        Console.WriteLine(actualOutput == expectedOutput ? "True" : "False");
+    }
+}

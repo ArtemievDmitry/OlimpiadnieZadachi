@@ -1,0 +1,96 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public class Program
+{
+    public static int[,] FillMatrix(string[] data, int countPicks)
+    {
+        int[,] matrix = new int[countPicks, countPicks];
+        for (int i = 1; i < countPicks; i++)
+        {
+            string[] line = data[i].Split();
+            int peak = int.Parse(line[0]);
+            int value = int.Parse(line[1]);
+            matrix[i, peak] = value;
+            matrix[peak, i] = value;
+            for (int j = 0; j < i; j++)
+            {
+                if (matrix[i, j] == 0)
+                {
+                    matrix[i, j] = value + matrix[peak, j];
+                    matrix[j, i] = value + matrix[peak, j];
+                }
+            }
+        }
+        return matrix;
+    }
+
+    public static List<int> FillBerries(string[] data, int minSpel)
+    {
+        List<int> berries = new List<int>();
+        foreach (string line in data)
+        {
+            string[] parts = line.Split();
+            if (int.Parse(parts[1]) >= minSpel)
+            {
+                berries.Add(int.Parse(parts[0]));
+            }
+        }
+        return berries;
+    }
+
+    public static (int, int) FindMinWay(int[,] matrix, int location, List<int> way)
+    {
+        int[] minWays = new int[way.Count];
+        for (int i = 0; i < way.Count; i++)
+        {
+            minWays[i] = matrix[location, way[i]];
+        }
+        int minValue = minWays.Min();
+        int index = Array.IndexOf(minWays, minValue);
+        return (minValue, way[index]);
+    }
+
+    public static int GiveAnswer(int[,] matrix, int location, List<int> berries)
+    {
+        int totalSum = 0;
+        while (berries.Count > 0)
+        {
+            (int minWay, int newLocation) = FindMinWay(matrix, location, berries);
+            totalSum += minWay;
+            berries.Remove(newLocation);
+            location = newLocation;
+        }
+        return totalSum;
+    }
+
+    public static void Main()
+    {
+        for (int i = 1; i <= 25; i++)
+        {
+            string filename = $"input_s1_{(i < 10 ? "0" + i : i.ToString())}.txt";
+            string[] data = System.IO.File.ReadAllLines(filename);
+            string[] firstLine = data[0].Split();
+            int countPeaks = int.Parse(firstLine[0]) + 1;
+            int countBerries = int.Parse(firstLine[1]);
+            int[,] matrix = FillMatrix(data, countPeaks);
+            string[] lastLine = data[^1].Split();
+            int location = int.Parse(lastLine[0]);
+            int minSpel = int.Parse(lastLine[1]);
+            string[] dataForBerries = data.Skip(countPeaks).Take(countBerries).ToArray();
+            List<int> berries = FillBerries(dataForBerries, minSpel);
+            int myAnswer = GiveAnswer(matrix, location, berries);
+            string outputFilename = $"OLYMP/- Eat/output_s1_{(i < 10 ? "0" + i : i.ToString())}.txt";
+            int realAnswer = int.Parse(System.IO.File.ReadAllText(outputFilename).Trim());
+            if (myAnswer == realAnswer)
+            {
+                Console.WriteLine($"{i}: True");
+            }
+            else
+            {
+                Console.WriteLine($"{i}: {myAnswer} {realAnswer}");
+            }
+        }
+    }
+}

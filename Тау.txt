@@ -1,0 +1,55 @@
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string inputFilePath = "OLYMP\\Tau\\input_s1_01.txt";
+        string[] words;
+        List<string> circularList = new List<string>();
+        List<string> palindromeList = new List<string>();
+        string outputString = "";
+
+        using (StreamReader inputFile = new StreamReader(inputFilePath))
+        {
+            string inputString = inputFile.ReadLine();
+            words = inputString.Split(' ');
+        }
+
+        int middleIndex = words.Length % 2 == 0 ? words.Length / 2 : (words.Length - 1) / 2;
+        circularList.Add(words[middleIndex]);
+        for (int i = 1; i <= middleIndex; i++)
+        {
+            circularList.Add(words[middleIndex - i]);
+            if (i < middleIndex)
+            {
+                circularList.Add(words[middleIndex + i]);
+            }
+        }
+
+        foreach (string word in circularList)
+        {
+            string palindrome = "";
+            middleIndex = word.Length % 2 == 0 ? word.Length / 2 : (word.Length - 1) / 2;
+            palindrome += word[middleIndex];
+            for (int i = 1; i <= middleIndex; i++)
+            {
+                palindrome += word[middleIndex - i];
+                if (i < middleIndex)
+                {
+                    palindrome += word[middleIndex + i];
+                }
+            }
+            palindromeList.Add(palindrome);
+        }
+
+        foreach (string palindrome in palindromeList)
+        {
+            outputString += palindrome + " ";
+        }
+        outputString = outputString.Trim();
+
+        Console.WriteLine(outputString);
+    }
+}

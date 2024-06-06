@@ -1,0 +1,93 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+class Program
+{
+    static Dictionary<string, string> Persons = new Dictionary<string, string>();
+
+    static void AddPerson(string num, string name)
+    {
+        Persons[num] = name;
+    }
+
+    static HashSet<string> FindSlaves(string mast, List<string[]> base_)
+    {
+        HashSet<string> slaves = new HashSet<string>();
+        for (int y = 0; y < base_.Count - 1; y++)
+        {
+            if (y % 2 == 0 && base_[y][0] == mast)
+            {
+                slaves.Add(base_[y + 1][0]);
+            }
+        }
+        return slaves;
+    }
+
+    static void Main(string[] args)
+    {
+        string[] f = File.ReadAllLines("OLYMP/Company/input_s1_16.txt");
+        HashSet<string> IDs = new HashSet<string>(f[0..^2].Select(i => i[..4]));
+        List<string[]> Pers = new List<string[]>();
+
+        for (int i = 0; i < f.Length - 2; i++)
+        {
+            Pers.Add(new[] { f[i][..4], f[i][5..] });
+        }
+
+        foreach (var i in IDs)
+        {
+            AddPerson(i, "Unknown Name");
+            foreach (var u in Pers)
+            {
+                if (i == u[0] && u[1] != "")
+                {
+                    AddPerson(i, u[1]);
+                }
+            }
+        }
+
+        string master = f[^1];
+        if (!int.TryParse(master, out _))
+        {
+            foreach (var i in Pers)
+            {
+                if (i[1] == master)
+                {
+                    master = i[0];
+                    break;
+                }
+            }
+        }
+
+        HashSet<string> master_slaves = FindSlaves(master, Pers);
+
+        HashSet<string> new_slaves = new HashSet<string>();
+        while (true)
+        {
+            int lens = master_slaves.Count;
+            foreach (var u in master_slaves)
+            {
+                new_slaves.UnionWith(FindSlaves(u, Pers));
+            }
+            master_slaves.UnionWith(new_slaves);
+            if (master_slaves.Count == lens)
+            {
+                break;
+            }
+        }
+
+        master_slaves = new HashSet<string>(master_slaves.OrderBy(o => o));
+        if (master_slaves.Count == 0)
+        {
+            Console.WriteLine("NO");
+        }
+        else
+        {
+            foreach (var o in master_slaves)
+            {
+                Console.WriteLine($"{o} {Persons[o]}");
+            }
+        }
+    }
+}

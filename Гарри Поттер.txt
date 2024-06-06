@@ -1,0 +1,40 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string[] f = File.ReadAllLines("input10.txt");
+        Dictionary<int, string> potion = new Dictionary<int, string>();
+        for (int i = 0; i < f.Length; i++)
+        {
+            potion[i + 1] = f[i].Replace("\n", "");
+        }
+
+        foreach (int key in potion.Keys)
+        {
+            potion[key] = Regex.Replace(potion[key], @"\b\d+\b", match => potion[int.Parse(match.Value)]);
+            if (potion[key].Contains("WATER "))
+            {
+                potion[key] = "WT" + potion[key].Replace("WATER", "") + " TW";
+            }
+            if (potion[key].Contains("DUST "))
+            {
+                potion[key] = "DT" + potion[key].Replace("DUST", "") + " TD";
+            }
+            if (potion[key].Contains("MIX "))
+            {
+                potion[key] = "MX" + potion[key].Replace("MIX", "") + " XM";
+            }
+            if (potion[key].Contains("FIRE "))
+            {
+                potion[key] = "FR" + potion[key].Replace("FIRE", "") + " RF";
+            }
+        }
+
+        Console.WriteLine(potion[potion.Count].Replace(" ", ""));
+    }
+}
